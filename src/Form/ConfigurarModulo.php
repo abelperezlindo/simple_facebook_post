@@ -32,94 +32,101 @@ class ConfigurarModulo extends ConfigFormBase {
     public function buildForm(array $form, FormStateInterface $form_state ){
 
       // Form constructor.
-        $form = parent::buildForm($form, $form_state);
-        $config_manager = \Drupal::service('analisis_autopost.config_manager');
-
+      $form = parent::buildForm($form, $form_state);
+      $config_manager = \Drupal::service('analisis_autopost.config_manager');
       $entityTypeManager = \Drupal::service('entity_type.manager');
 
       $types = [];
-
-
       $contentTypes = $entityTypeManager->getStorage('node_type')->loadMultiple();
       foreach ($contentTypes as $contentType) {
           $types[$contentType->id()] = $contentType->label();
       }
+      $saved_content_id = \Drupal::state()->get('analisis_autopost.content', '');
 
-      $form['description'] = [
-        '#markup' => t('<p>Este modulo es usado para compartir noticias del sitio en Facebook. El contenido que se comparte es "Noticia" y cada vez que se crea una nueva noticia se publica en facebook</p>
-        <p>Se publica el titulo, el resumen del cuerpo, o una parte de el, la imagen principal de la noticia y el enlace.<p>
-        <p>A continuación se debe ingresar información de la app de facebook, esto es necesario para poder comunicarse con la api de Facebook</p>')
-      ];
+      if(empty($saved_content_id)){
+        $form['content_box'] = [
+          '#type'   => 'details',
+          '#title'  => t('Configuración del contenido'),
+          '#description' => 'Seleccione el tipo de contenido y los campos que serán usados para compartir',
+        ];
+        $form['content_box']['content'] = [
+          '#type'   => 'select',
+          '#title'  => t('Tipo de contenido'),
+          '#options' => $types,
+          '#empty_option'  => t('Seleccionar'),
+          '#description'  => t('Ingrese el nombre de sistema del el tipo de contenido que desea utilizar'),
+        ];
+        $form['content_box']['save_content_id'] = [
+          '#type' => 'submit',
+          '#name' => 'save_content_id',
+          '#value' => t('save content config')
+        ]; 
+      }
+      else {
 
-      $form['content_box'] = [
-        '#type'   => 'details',
-        '#title'  => t('Configuración del contenido'),
-        '#description' => 'Ingrese el tipo de contenido y los campos que serán usados para compartir',
-        '#prefix'   => '<div id="config-content-box">',
-        '#suffix'   => '</div>',
-      ];
+        $options = $this->_getFieldOptions($saved_content_id);
+        $form['content_box'] = [
+          '#type'   => 'details',
+          '#title'  => t('Configuración del contenido'),
+          '#description' => t( 
+            'El tipo de contenido usado es :@content_type, usted puede seleccionar 
+            los campos a partir de los cuales se creará la publicación social.',
+            [':@content_type' => $types[$saved_content_id]]
+          ),
+        ];
+        $form['content_box']['title'] = [
+          '#type'   => 'select',
+          '#options' => $options['title'],
+          '#title'  => t('Campo de titulo '),
+          '#description'  => t('Ingrese el nombre de sistema del del campo que desea utilizar como titulo.'),
+          '#default_value' => \Drupal::state()->get('analisis_autopost.title', ''),
+          '#empty_option'  => t('Seleccionar')
+        ];
   
-      $selected_content = $form_state->getValue('content') ?? null;
-      if(is_null($selected_content)){
-        $selected_content = \Drupal::state()->get('analisis_autopost.content', '');
+        $form['content_box']['title_suffix'] = [
+          '#type'   => 'textfield',
+          '#title'  => t('Title suffx'),
+          '#description'  => t('Ingrese un texto fijo o un token para concatenar al final del tiulo.'),
+          '#default_value' => \Drupal::state()->get('analisis_autopost.title_suffix', ''),
+          '#empty_option'  => t('Seleccionar')
+        ];
+        $form['content_box']['body'] = [
+          '#type'   => 'select',
+          '#title'  => t('Campo de texto'),
+          '#options' => $options['body'],
+          '#description'  => t('Ingrese el nombre de sistema del del campo que desea utilizar como fuente del texto.'),
+          '#default_value' => \Drupal::state()->get('analisis_autopost.body', ''),
+          '#empty_option'  => t('Seleccionar')
+  
+        ];
+        $form['content_box']['media'] = [
+          '#type'   => 'select',
+          '#title'  => t('Campo multimedia'),
+          '#options' => $options['image'],
+          '#description'  => t('Ingrese el nombre de sistema del del campo que desea utilizar como fuente del texto.'),
+          '#default_value' => \Drupal::state()->get('analisis_autopost.media', ''),
+          '#empty_option'  => t('Seleccionar')
+        ];
+        $form['content_box']['options']['delete'] = [
+          '#type' => 'submit',
+          '#name' => 'delete_content_config',
+          '#value' => t('Eliminar configuración')
+        ]; 
+        $form['content_box']['options']['perview'] = [
+          '#type' => 'submit',
+          '#name' => 'content_config_preview',
+          '#value' => t('Guardar y previsualizar')
+        ];
+        $preview = \Drupal::state()->get('analisis_autopost.preview_markup', '');
+        if(!empty($preview)){
+          $form['content_box']['preview_markup'] = [
+            '#markup' => $preview,
+          ];
+          \Drupal::state()->set('analisis_autopost.preview_markup', '');
+        }
+        
+        
       }
-
-      $form['content_box']['content'] = [
-        '#type'   => 'select',
-        '#title'  => t('Tipo de contenido'),
-        '#options' => $types,
-        '#description'  => t('Ingrese el nombre de sistema del el tipo de contenido que desea utilizar'),
-        '#default_value' => $selected_content,
-        '#ajax'     => ['callback' => [$this, 'reloadContntBox'], 'wrapper'   => 'config-content-box']
-      ];
-
-      $options = ['title' => [], 'body' => [], 'image' => []];
-      $selected_title = '';
-      $selected_body = '';
-      $selected_image = '';
-
-      if(empty($selected_content)){
-        $options = $this->_getFieldOptions($selected_content);
-        $selected_title = \Drupal::state()->get('analisis_autopost.title', '');
-        $selected_body = \Drupal::state()->get('analisis_autopost.body', '');
-        $selected_image = \Drupal::state()->get('analisis_autopost.media', '');
-      }
-
-      
-      $form['content_box']['title'] = [
-        '#type'   => 'select',
-        '#options' => $options['title'],
-        '#title'  => t('Campo de titulo '),
-        '#description'  => t('Ingrese el nombre de sistema del del campo que desea utilizar como titulo.'),
-        '#default_value' => $selected_title
-      ];
-      $form['content_box']['title_suffix'] = [
-        '#type'   => 'textfield',
-        '#title'  => t('Title suffx'),
-        '#description'  => t('Ingrese un texto fijo o un token para concatenar al final del tiulo.'),
-        '#default_value' => \Drupal::state()->get('analisis_autopost.title_suffix', '')
-
-      ];
-      $form['content_box']['body'] = [
-        '#type'   => 'select',
-        '#title'  => t('Campo de texto'),
-        '#options' => $options['body'],
-        '#description'  => t('Ingrese el nombre de sistema del del campo que desea utilizar como fuente del texto.'),
-        '#default_value' => $selected_body
-
-      ];
-      $form['content_box']['media'] = [
-        '#type'   => 'select',
-        '#title'  => t('Campo multimedia'),
-        $options => $options['image'],
-        '#description'  => t('Ingrese el nombre de sistema del del campo que desea utilizar como fuente del texto.'),
-        '#default_value' => $selected_image
-      ];
-      $form['content_box']['perview'] = [
-        '#type' => 'submit',
-        '#name' => 'content_preview',
-        '#value' => 'Previsualizar'
-      ];
 
       $form['facebook'] = [
         '#type'   => 'details',
@@ -269,75 +276,104 @@ class ConfigurarModulo extends ConfigFormBase {
     {
       $trigger = $form_state->getTriggeringElement();
       $config_manager = \Drupal::service('analisis_autopost.config_manager');
-      // content_preview
-      if($trigger['#type'] === 'submit' && $trigger['#name'] =='content_preview'){
 
-        $config_manager::setContentConfig($form_state->getValues());
-        //$query = \Drupal::entityQuery($form_state->getValue('content'));
-        
+
+
+
+
+      if($trigger['#type'] === 'submit' && $trigger['#name'] =='save_content_id'){
+        \Drupal::state()->set('analisis_autopost.content', $form_state->getValue('content'));
+        return;
+      }
+
+      if($trigger['#type'] === 'submit' && $trigger['#name'] =='delete_content_config'){
+        \Drupal::state()->set('analisis_autopost.content', '');
+        \Drupal::state()->set('analisis_autopost.title', '');
+        \Drupal::state()->set('analisis_autopost.body', '');
+        \Drupal::state()->set('analisis_autopost.title_suffix', '');
+        \Drupal::state()->set('analisis_autopost.media', '');
+        return;
+      }
+
+
+      if($trigger['#type'] === 'submit' && $trigger['#name'] =='content_config_preview'){
+
+        //$config_manager::setContentConfig($form_state->getValues());
+        \Drupal::state()->set('analisis_autopost.title', $form_state->getValue('title'));
+        \Drupal::state()->set('analisis_autopost.body', $form_state->getValue('body'));
+        \Drupal::state()->set('analisis_autopost.title_suffix', $form_state->getValue('title_suffix'));
+        \Drupal::state()->set('analisis_autopost.media', $form_state->getValue('media'));
+        $saved_content_id = \Drupal::state()->get('analisis_autopost.content', '');
         $query = \Drupal::entityQuery('node');
         $query
-          ->condition('type', $form_state->getValue('content'))
+          ->condition('type', $saved_content_id)
           ->sort('changed', 'DESC')
           ->range(0, 1);
 
         $nid      = $query->execute();
+        if(empty($nid)){
+          //\Drupal::messenger()->addStatus(t('No existe contenido del tipo :@type', [':@type' => $saved_content_id]));
+          $form_state->setValue();
+          \Drupal::state()->set(
+            'analisis_autopost.preview_markup', 
+            'No existe contenido del tipo seleccionado.'
+          );
+          return;
+        }
+
         $node     = \Drupal::entityTypeManager()->getStorage('node')->load(array_pop($nid));
         $message  = [];
-        //$definitions  = \Drupal::entityTypeManager()->getDefinition('field');
+        $message[] = '<div class="post-preview-wrapper"><p>Previsualizando nodo de tipo ' . $saved_content_id . ' como ejemplo</p>'; 
+        $message[] = '<div class="post-preview-card">';
+        if($node->hasField($form_state->getValue('media'))){
+          $message[] = '<div class="post-preview-img" title="Post image">';
 
-        $node->hasField('field_tags');
-
-        // Returns an array with named keys for all fields and their
-        // definitions. For example the ‘image’ field.
-        $field_definitions = $node->getFieldDefinitions();
-
-       
-        /*
-        \Drupal::entityTypeManager()
-          ->getStorage('field_storage_config')
-          ->load($entity_type_id . '.' . $field_name);
-          */
-        if(isset($node->{$form_state->getValue('title')})){
-          $message[] = 'Tine titulo: ' . $node->{$form_state->getValue('title')}->value;
-
-        }
-        if(isset($node->{$form_state->getValue('body')})){
-          
-          /** @var \Drupal\Core\Field\FieldItemList $body_field */
-          $body_field = $node->{$form_state->getValue('body')};
-          $field_definition = $body_field->getFieldDefinition(); /** @var Drupal\field\Entity\FieldConfig $field_definition */
-          if( in_array($field_definition->getType(), ['text', 'text_long', 'text_with_summary'])  ){
-            $message[] = 'Tine body: ' . $node->{$form_state->getValue('body')}->value;
-          }
-        }
-        
-        if(isset($node->{$form_state->getValue('media')})){
           /** @var \Drupal\file\Plugin\Field\FieldType\FileFieldItemList $media */
-          $ref_list = $node->{$form_state->getValue('media')}->referencedEntities();
-         
-         
+          $ref_list = $node->{$form_state->getValue('media')}->referencedEntities(); /** @todo problema aca */
           if(isset($ref_list[0])){
-             /** @var \Drupal\file\Entity\File $file */
+            /** @var \Drupal\file\Entity\File $file */
             $file_uri = $ref_list[0]->getFileUri();
 
             // Remove the if-else when core_version_requirement >= 9.3 for this module.
             if(\Drupal::hasService('file_url_generator')) {
               $generator = \Drupal::service('file_url_generator');
-              $url = $generator->generateAbsoluteString($file_uri);
+              $image_uri = \Drupal\image\Entity\ImageStyle::load('medium')->buildUrl($file_uri);
+              $img_url = $generator->generateAbsoluteString($image_uri);
+
             }
             else {
-              $url = file_url_transform_relative(file_create_url($file_uri));
+              $img_url = file_url_transform_relative(file_create_url($file_uri));
             }
 
           } 
-          $message[] = 'Tine media: ' . $url;
+          if(!empty($img_url)){
+            $message[] = '<img src="' . $img_url . '">';
+          }
+          $message[] = '</div>';
+        }
 
-        }   
+        if($node->hasField($form_state->getValue('title'))){
+          $message[] = '<div class="post-preview-title title="Post Title"">';
+          $title =  $node->{$form_state->getValue('title')};
+          $field_type = $title->getFieldDefinition()->getType();
+          if(in_array($field_type, ['string', 'text'])){
+            $message[] = '<h5>' . $title->value . ' ' . $form_state->getValue('title_suffix') . '</h5>';
+          }
+          $message[] = '</div>';
+       
+        }
 
-        \Drupal::messenger()->addStatus(t(implode($message)));
-        
-        
+        if($node->hasField($form_state->getValue('body'))){
+          $message[] = '<div class="post-preview-body title="Post Body"">';
+          $body =  $node->{$form_state->getValue('body')};
+          $field_type = $body->getFieldDefinition()->getType();
+          if(in_array($field_type, ['string', 'text', 'text_long', 'text_with_summary'])){
+            $message[] = '<p>' . $body->value . '</p>';
+          }
+          $message[] = '</div>';
+        }
+        $message[] = '</div></div>';
+        \Drupal::state()->set('analisis_autopost.preview_markup', implode($message));
 
       }
 
@@ -418,12 +454,19 @@ class ConfigurarModulo extends ConfigFormBase {
 
     }
 
-    public function reloadContntBox(array $form, FormStateInterface $form_state){
-      return $form['content_box'];
+    public function reloadContentBox(array $form, FormStateInterface $form_state){
+      $selected_content = \Drupal::state()->get('analisis_autopost.content', 'nothing');
+      if($selected_content == 'nothing'){
+        return  [];
+      }
+      return $form['content_box']['options'];
     }
  
     private function _getFieldOptions(string $content_type){
       $options = ['title' => [], 'body' => [], 'image' => []];
+      if($content_type == 'nothing'){
+        return $options;
+      }
       //EntityFieldManager::getFieldDefinitions()
       //foreach()
       /** @var \Drupal\Core\Entity\EntityFieldManager $fieldManager */

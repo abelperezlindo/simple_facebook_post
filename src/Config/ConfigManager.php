@@ -3,111 +3,91 @@ namespace Drupal\analisis_autopost\Config;
 
 class ConfigManager{
 
-  public function __construct()
-  { 
-    
+  public const TITLE_ALLOWED_FIELDS_TYPE = ['string', 'text'];
+  public const BODY_ALLOWED_FIELDS_TYPE  = ['string', 'text', 'text_with_summary', 'string_long'];
+  public const IMAGE_ALLOWED_FIELDS_TYPE = ['image'];
+  /**
+   * Set a key in state
+   */
+  public static function set($key, $value){
+    if(empty($key)){
+      return;
+    }
+
+    \Drupal::state()->set('analisis_autopost.' . $key, $value);
+  }
+   /**
+   * get a variable from state
+   */
+  public static function get(string $key){
+    if(empty($key)){
+      return null;
+    }
+
+    return \Drupal::state()->get('analisis_autopost.' . $key);
   }
   /**
-   * Obtener toda la configuración
+   * get values of multiples variables from state
    */
-  public static function getAll(array $config)
-  {
-    $fb_config = self::getFacebookConfig();
-    $tw_config = self::getTwitterConfig();
-    $result = $fb_config;
-    foreach($tw_config as $key => $value){
-      $result[$key] = $value;
+  public static function getMultiple(array $keys){
+    $result = $keys;
+    foreach($result as $key => $value){
+      $value = self::get($key);
     }
     return $result;
   }
   /**
-   * Guardar toda la configuracion
+   * get all state vars used by this module
    */
-  public static function setAll(array $config){
-    self::setContentConfig($config);
-    self::setFacebookConfig($config);
-    self::setTwitterConfig($config);
+  public static function getAll(){
+    $allKeys = [
+      'content',
+      'title',
+      'title_suffix',
+      'body',
+      'media',
+      'image_style',
+      'preview_markup',
+      'twitter_consumer_key',
+      'twitter_consumer_secret',
+      'twitter_access_token',
+      'twitter_access_token_secret',
+      'facebook_app_id',
+      'facebook_app_secret',
+      'facebook_page_id',
+      'facebook_api_version',
+      'facebook_permisos',
+      'facebook_user_acces_token',
+    ];
+    return self::getMultiple($allKeys);
   }
 
-  public static function setContentConfig(array $config){
-      \Drupal::state()->setMultiple([
-        'analisis_autopost.content' => $config['content'] ?? '',
-        'analisis_autopost.title'   => $config['title'] ?? '',
-        'analisis_autopost.title_suffix'      => $config['title_suffix'] ?? '',
-        'analisis_autopost.body'  => $config['body'] ?? '',
-        'analisis_autopost.media' => $config['media'] ?? '',
-      ]);
-  
-  }
-  public static function getContentConfig(){
-  
-    return [
-      'content'       => \Drupal::state()->get('analisis_autopost.content', ''),
-      'title'         => \Drupal::state()->get('analisis_autopost.title', ''),
-      'title_suffix'  => \Drupal::state()->get('analisis_autopost.title_suffix', ''),
-      'body'          => \Drupal::state()->get('analisis_autopost.body', ''),
-      'media'         => \Drupal::state()->get('analisis_autopost.media', ''),
-    ];
-
-}
-  public static function getFacebookConfig(){
-    return [
-      'facebook_app_id'       => \Drupal::state()->get('analisis_autopost.facebook_app_id', ''),
-      'facebook_app_secret'   => \Drupal::state()->get('analisis_autopost.facebook_app_secret', ''),
-      'facebook_page_id'      => \Drupal::state()->get('analisis_autopost.facebook_page_id', ''),
-      'facebook_api_version'  => \Drupal::state()->get('analisis_autopost.facebook_api_version', ''),
-      'facebook_permisos'     => \Drupal::state()->get('analisis_autopost.facebook_permisos', '')
-    ];
-  }
-  /**
-   * Guardar la configuración para facebook
+  /** 
+   * set values of multiples variables from state
    */
-  public static function setFacebookConfig(array $config){
-      \Drupal::state()->setMultiple([
-        'analisis_autopost.facebook_app_id'       => $config['facebook_app_id'] ?? '',
-        'analisis_autopost.facebook_app_secret'   => $config['facebook_app_secret'] ?? '',
-        'analisis_autopost.facebook_page_id'      => $config['facebook_page_id'] ?? '',
-        'analisis_autopost.facebook_api_version'  => $config['facebook_api_version'] ?? '',
-        'analisis_autopost.facebook_permisos'     => $config['facebook_permisos'] ?? '',
-      ]);
-  }
-  /**
-   * Obtener la configuración
-   */
-  public static function getTwitterConfig(){
-    return [
-      'twitter_consumer_key'        => \Drupal::state()->get('analisis_autopost.twitter_consumer_key', ''),
-      'twitter_consumer_secret'     => \Drupal::state()->get('analisis_autopost.twitter_consumer_secret', ''),
-      'twitter_access_token'        => \Drupal::state()->get('analisis_autopost.twitter_access_token', ''),
-      'twitter_access_token_secret' => \Drupal::state()->get('analisis_autopost.twitter_access_token_secret', '')
-    ];
-  }
-  /**
-   * Guardar la configuracion para twitter
-   */
-  public static function setTwitterConfig(array $config){
-    if(empty($config)){
-      return;
+  public static function setMultiple(array $keys){
+    
+    foreach($keys as $key => $value){
+      self::set($key, $value);
     }
-
-    \Drupal::state()->setMultiple([
-      'analisis_autopost.twitter_consumer_key'        => $config['twitter_consumer_key'] ?? '',
-      'analisis_autopost.twitter_consumer_secret'     => $config['twitter_consumer_secret'] ?? '',
-      'analisis_autopost.twitter_access_token'        => $config['twitter_access_token'] ?? '',
-      'analisis_autopost.twitter_access_token_secret' => $config['twitter_access_token_secret'] ?? ''
-    ]);
-
   }
-
+  
   public static function getFbUserAccessToken(){
-    return \Drupal::state()->get('analisis_autopost.user_acces_token', null);
+    return \Drupal::state()->get('analisis_autopost.facebook_user_acces_token', null);
   }
   public static function setFbUserAccessToken($token){
-    return \Drupal::state()->set('analisis_autopost.user_acces_token', $token);
+    return \Drupal::state()->set('analisis_autopost.facebook_user_acces_token', $token);
   }
 
   public static function isFbConfigured(){
-    $fb_config = self::getFacebookConfig();
+
+    $fb_config = self::getMultiple([
+      'facebook_app_id',
+      'facebook_app_secret',
+      'facebook_page_id',
+      'facebook_api_version',
+      'facebook_permisos',
+    ]);
     foreach($fb_config as $key => $value){
       if(empty($value)){
         return false;
@@ -115,4 +95,47 @@ class ConfigManager{
     }
     return true;
   }
+
+  public static function getFieldsOptions(string $content_type = 'nothing'){
+
+    $options = ['title' => [], 'body' => [], 'image' => []];
+    if($content_type == 'nothing'){
+      return $options;
+    }
+
+    /**
+     * @var \Drupal\Core\Field\FieldDefinitionInterface[] $fields_def 
+     */
+    
+    $fields_def =  \Drupal::service('entity_field.manager')
+      ->getFieldDefinitions('node', $content_type );
+    foreach($fields_def as $key => $value){
+      if(in_array($value->getType(), self::TITLE_ALLOWED_FIELDS_TYPE)){
+        $options['title'][$key] = $key;
+      }
+
+      if(in_array($value->getType(), self::BODY_ALLOWED_FIELDS_TYPE)){
+        $options['title'][$key] = $key;
+        $options['body'][$key] = $key;
+      }
+      if(in_array($value->getType(), self::IMAGE_ALLOWED_FIELDS_TYPE)){
+        $options['image'][$key] = $key;
+      }
+    }
+    return $options;
+  }
+
+  public static function getNodeTypesIds(){
+    $types = [];
+    $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
+    foreach ($contentTypes as $contentType) {
+        $types[$contentType->id()] = $contentType->label();
+    }
+    return $types;
+  }
+
+  public static function getImageStylesOptions(){
+    return \Drupal::entityQuery('image_style')->execute();
+  }
+  
 }

@@ -1,7 +1,8 @@
 analisis_autopost.settings:
   type: config_object
-  label: 'Example config'
+  label: 'configuration'
   mapping:
-    message:
+    post.content_type:
       type: text
-      label: 'Message'
+      label: 'Content type id for share'
+   

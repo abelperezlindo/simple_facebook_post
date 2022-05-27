@@ -40,7 +40,6 @@ class ConfigurarModulo extends ConfigFormBase {
       $saved_content_id = $config_manager::get('content');
       $image_styles     = $config_manager::getImageStylesOptions();
 
-
       $form['sections'] = [
         '#type'         => 'vertical_tabs',
         '#title'        => t('Settings'),
@@ -50,16 +49,23 @@ class ConfigurarModulo extends ConfigFormBase {
       if(empty($saved_content_id)){
         $form['content_box'] = [
           '#type'         => 'details',
-          '#title'        => t('Configuración del contenido'),
-          '#description'  => 'Seleccione el tipo de contenido y los campos que serán usados para compartir',
+          '#title'        => t('Content Settings'),
           '#group'        => 'sections',
+          '#description'  => t('
+            Select the type of content and the 
+            fields that will be used for sharing on 
+            social networks when the content is created.'
+          ),
         ];
         $form['content_box']['content'] = [
           '#type'         => 'select',
-          '#title'        => t('Tipo de contenido'),
+          '#title'        => t('Content type'),
           '#options'      => $types,
-          '#empty_option' => t('Seleccionar'),
-          '#description'  => t('Ingrese el nombre de sistema del el tipo de contenido que desea utilizar'),
+          '#empty_option' => t('Select'),
+          '#description'  => t('
+            Select the type of content you want to use to be published 
+            on social networks at the time of its creation.
+          '),
         ];
         $form['content_box']['save_content_id'] = [
           '#type'   => 'submit',
@@ -71,11 +77,10 @@ class ConfigurarModulo extends ConfigFormBase {
         $options = $config_manager::getFieldsOptions($saved_content_id);
         $form['content_box'] = [
           '#type'         => 'details',
-          '#title'        => t('Configuración del contenido'),
+          '#title'        => t('Content Settings'),
           '#group'        => 'sections',
           '#description'  => t( 
-            'El tipo de contenido usado es :@content_type, usted puede seleccionar 
-            los campos a partir de los cuales se creará la publicación social.',
+            'The content type used is :@content_type, you can select the fields from which the social post will be created.',
             [':@content_type' => $types[$saved_content_id]]
           ),
           
@@ -83,9 +88,9 @@ class ConfigurarModulo extends ConfigFormBase {
         $form['content_box']['title'] = [
           '#type'           => 'select',
           '#options'        => $options['title'],
-          '#title'          => t('Campo de titulo '),
+          '#title'          => t('Field to use to generate the title of the post'),
           '#default_value'  =>  $config_manager::get('title') ?? '',
-          '#empty_option'   => t('Seleccionar'),
+          '#empty_option'   => t('Select'),
           '#description'    => t(
             'Select the field you want to use as the title of the post.'
           ),
@@ -95,17 +100,17 @@ class ConfigurarModulo extends ConfigFormBase {
           '#type'           => 'textfield',
           '#title'          => t('Title suffx'),
           '#default_value'  => $config_manager::get('title_suffix') ?? '',
-          '#empty_option'   => t('Seleccionar'),
+          '#empty_option'   => t('select'),
           '#description'    => t(
             'Enter a fixed text or a token to concatenate to the end of the title.'
           ),
         ];
         $form['content_box']['body'] = [
           '#type'           => 'select',
-          '#title'          => t('Campo de texto'),
+          '#title'          => t('Field to use to generate the body of the post'),
           '#options'        => $options['body'],
           '#default_value'  => $config_manager::get('body') ?? '',
-          '#empty_option'   => t('Seleccionar'),
+          '#empty_option'   => t('Select'),
           '#description'    => t(
             'Select the field you want to use
             as a font for the body of the post. If the text is too long, it will be cut off.'
@@ -157,34 +162,31 @@ class ConfigurarModulo extends ConfigFormBase {
 
       $form['facebook'] = [
         '#type'   => 'details',
-        '#title'  => t('Configuración del posteo automatico en facebook'),
+        '#title'  => t('Facebook API Access Settings'),
         '#group'  => 'sections',
       ];
       $form['facebook']['facebook_app_id'] = [
         '#type'         => 'textfield',
-        '#title'        => t('App id'),
-        '#description'  => t('Id de la aplicacion de Facebook'),
-        'Aattributes'   => ['placeholder' => 'App id'],
+        '#title'        => t('Facebook app id'),
+        '#description'  => t('Facebook app id'),
         '#default_value' => $config_manager::get('facebook_app_id')
       ];
       $form['facebook']['facebook_app_secret'] = [
         '#type'         => 'textfield',
-        '#title'        => t('App secret'),
-        '#description'  => t('App secret de la aplicacion de Facebook'),
-        'Aattributes'   => ['placeholder' => 'App secret'],
+        '#title'        => t('Facebook app secret'),
+        '#description'  => t('Facebook app secret'),
         '#default_value' => $config_manager::get('facebook_app_secret')
       ];
       $form['facebook']['facebook_page_id'] = [
         '#type'         => 'textfield',
-        '#title'        => t('Id de la página'),
-        '#description'  => t('Id de la página de Facebook en la cual se va a postear'),
-        'Aattributes'   => ['placeholder' => 'App id'],
+        '#title'        => t('Facebook page id'),
+        '#description'  => t('Id of the Facebook page in which the content of the site will be published'),
         '#default_value' => $config_manager::get('facebook_page_id')
       ];
       $form['facebook']['facebook_api_version'] = [
         '#type'         => 'textfield',
         '#title'        => t('Version de la api'),
-        '#description'  => t('Ingrese la version de la api a usar para interactuar con facebook'),
+        '#description'  => t('Enter the version of the API to use to interact with facebook'),
         '#default_value' => $config_manager::get('facebook_api_version') ?? 'v13.0'
       ];
       $form['facebook']['facebook_permissions'] = [
@@ -192,9 +194,10 @@ class ConfigurarModulo extends ConfigFormBase {
         '#title'          => t('Permissions'),
         '#default_value'  => $config_manager::get('facebook_permissions') ?? 'email',
         '#description'    => t(
-          'Enter the necessary permissions for the operation 
-          of this module separated by commas ","
-          , the permissions change depending on the version 
+          'Enter the necessary permissions to be able to post content on 
+          a user-managed Facebook page that grants access to your facebook 
+          account. Enter each permission separated by a comma ",".
+          the permissions change depending on the version 
           of the api that is used. See the Facebook graph api 
           documentation for more information'),
       ];
@@ -205,48 +208,51 @@ class ConfigurarModulo extends ConfigFormBase {
       
       $form['twitter'] = [
         '#type'   => 'details',
-        '#title'  => t('Configuración del posteo automatico en Twiter'),
+        '#title'  => t('Twitter API Access Settings'),
         '#group' => 'sections',
       ];
       $form['twitter']['twitter_consumer_key'] = [
         '#type'           => 'textfield',
         '#title'          => t('Consumer Key'),
-        '#description'    => t('Ingrese consumer key'),
-        'Aattributes'     => ['placeholder' => 'v13.0'],
+        '#description'    => t('Enter the consumer key'),
         '#default_value'  => $config_manager::get('twitter_consumer_key'),
       ];
       $form['twitter']['twitter_consumer_secret'] = [
         '#type'           => 'textfield',
         '#title'          => t('Consumer Secret'),
-        '#description'    => t('Ingrese consumer secret'),
-        'Aattributes'     => ['placeholder' => 'v13.0'],
+        '#description'    => t('Enter the consumer secret'),
         '#default_value'  => $config_manager::get('twitter_consumer_secret'),
       ];
       $form['twitter']['twitter_access_token'] = [
         '#type'           => 'textfield',
         '#title'          => t('Access Token'),
-        '#description'    => t('Ingrese access token'),
-        'Aattributes'     => ['placeholder' => 'v13.0'],
+        '#description'    => t(
+          'Enter the access token. This access 
+          token allows access to the twitter account 
+          in which the content of the site will be published.'
+        ),
         '#default_value'  => $config_manager::get('twitter_access_token'),
       ];
       $form['twitter']['twitter_access_token_secret'] = [
-        '#type'         => 'textfield',
-        '#title'        => t('Access Token Secret'),
-        '#description'  => t('Ingrese access token secret'),
-        'Aattributes'   => ['placeholder' => 'v13.0'],
-        '#default_value' => $config_manager::get('twitter_access_token_secret'),
+        '#type'           => 'textfield',
+        '#title'          => t('Access Token Secret'),
+        '#default_value'  => $config_manager::get('twitter_access_token_secret'),
+        '#description'    => t(
+          'Enter the access token secret. This access 
+          token secret allows access to the twitter account 
+          in which the content of the site will be published.'
+        ),
+        
       ];
       $form['twitter']['twitter_test_connection'] = [
         '#type'  => 'submit',
         '#name'  => 'action_twitter_test',
-        '#value' => 'Comprobar',
+        '#value' => t('Test api access '),
       ];
 
       return $form;
     }
   
-
-
     /**
      * { @inheritDoc }
      */

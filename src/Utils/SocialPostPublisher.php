@@ -1,5 +1,5 @@
 <?php 
-namespace Drupal\analisis_autopost\Utils;
+namespace Drupal\simpleFacebookPost\Utils;
 
 class SocialPostPublisher
 {

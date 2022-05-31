@@ -1,5 +1,5 @@
 <?php
-namespace Drupal\analisis_autopost\Config;
+namespace Drupal\simpleFacebookPost\Config;
 
 class ConfigManager{
 
@@ -14,7 +14,7 @@ class ConfigManager{
       return;
     }
 
-    \Drupal::state()->set('analisis_autopost.' . $key, $value);
+    \Drupal::state()->set('simple_facebook_post.' . $key, $value);
   }
    /**
    * get a variable from state
@@ -24,7 +24,7 @@ class ConfigManager{
       return null;
     }
 
-    return \Drupal::state()->get('analisis_autopost.' . $key);
+    return \Drupal::state()->get('simple_facebook_post.' . $key);
   }
   /**
    * get values of multiples variables from state
@@ -73,10 +73,10 @@ class ConfigManager{
   }
   
   public static function getFbUserAccessToken(){
-    return \Drupal::state()->get('analisis_autopost.facebook_user_acces_token', null);
+    return \Drupal::state()->get('simple_facebook_post.facebook_user_acces_token', null);
   }
   public static function setFbUserAccessToken($token){
-    return \Drupal::state()->set('analisis_autopost.facebook_user_acces_token', $token);
+    return \Drupal::state()->set('simple_facebook_post.facebook_user_acces_token', $token);
   }
 
   public static function isFbConfigured(){

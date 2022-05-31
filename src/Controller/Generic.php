@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\analisis_autopost\Controller;
+namespace Drupal\simpleFacebookPost\Controller;
 
 use Drupal;
 use Drupal\Core\Form\FormBuilder;

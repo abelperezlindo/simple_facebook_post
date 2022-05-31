@@ -1,7 +1,7 @@
 <?php 
-namespace Drupal\analisis_autopost\Twitter;
+namespace Drupal\simpleFacebookPost\Twitter;
 
-use \Drupal\analisis_autopost\Post\Post;
+use \Drupal\simpleFacebookPost\Post\Post;
 use \Abraham\TwitterOAuth\TwitterOAuth; 
 use Exception;
 
@@ -22,10 +22,10 @@ class TwitterPost {
   public function __construct()
   {
     
-    $this->consumer_key         = \Drupal::state()->get('analisis_autopost.twitter_consumer_key');
-    $this->consumer_secret      = \Drupal::state()->get('analisis_autopost.twitter_consumer_secret');
-    $this->access_token         = \Drupal::state()->get('analisis_autopost.twitter_access_token');
-    $this->access_token_secret  = \Drupal::state()->get('analisis_autopost.twitter_access_token_secret');
+    $this->consumer_key         = \Drupal::state()->get('simple_facebook_post.twitter_consumer_key');
+    $this->consumer_secret      = \Drupal::state()->get('simple_facebook_post.twitter_consumer_secret');
+    $this->access_token         = \Drupal::state()->get('simple_facebook_post.twitter_access_token');
+    $this->access_token_secret  = \Drupal::state()->get('simple_facebook_post.twitter_access_token_secret');
 
   }
 

@@ -1,5 +1,5 @@
 <?php
-namespace Drupal\analisis_autopost\Form;
+namespace Drupal\simpleFacebookPost\Form;
 
 use Drupal\Core\Entity;
 use \Facebook\Facebook as Facebook;
@@ -10,21 +10,21 @@ use Drupal\field\FieldConfigInterface;
 use \Abraham\TwitterOAuth\TwitterOAuth;
 use Drupal\Core\Form\FormStateInterface;
 use \Facebook\Exception\ResponseException;
-use Drupal\analisis_autopost\Twitter\TwitterPost;
-use Drupal\analisis_autopost\Facebook\FacebookPost;
+use Drupal\simpleFacebookPost\Twitter\TwitterPost;
+use Drupal\simpleFacebookPost\Facebook\FacebookPost;
 use Drupal\config_translation\FormElement\FormElementBase;
 
 class ConfigurarModulo extends ConfigFormBase {
 
     public function getFormId()
     {
-        return 'analisis_autopost_form';
+        return 'simple_facebook_post';
         
     }
 
     public function getEditableConfigNames(){
       return [
-        'analisis_autopost.settings'  
+        'simple_facebook_post.settings'  
       ];
     }
 
@@ -35,7 +35,7 @@ class ConfigurarModulo extends ConfigFormBase {
       $form = parent::buildForm($form, $form_state);
       /** @var \Drupal\Core\Utility\Token $token */
       $tokens = \Drupal::token();
-      $config_manager   = \Drupal::service('analisis_autopost.config_manager');
+      $config_manager   = \Drupal::service('simple_facebook_post.config_manager');
       $types            = $config_manager::getNodeTypesIds();
       $saved_content_id = $config_manager::get('content');
       $image_styles     = $config_manager::getImageStylesOptions();
@@ -259,7 +259,7 @@ class ConfigurarModulo extends ConfigFormBase {
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
       $trigger = $form_state->getTriggeringElement();
-      $config_manager = \Drupal::service('analisis_autopost.config_manager');
+      $config_manager = \Drupal::service('simple_facebook_post.config_manager');
 
 
       if($trigger['#type'] === 'submit' && $trigger['#name'] =='save_content_id'){
@@ -402,11 +402,11 @@ class ConfigurarModulo extends ConfigFormBase {
             $response = $fb->get('/me?fields=name');
           } catch(ResponseException $e) {
             $err = 'Graph returned an error: ' . $e->getMessage();
-            \Drupal::logger('analisis_autopost')->warning($err);
+            \Drupal::logger('simple_facebook_post')->warning($err);
             return false;
           } catch(SDKException $e) {
             $err = 'Facebook SDK returned an error: ' . $e->getMessage();
-            \Drupal::logger('analisis_autopost')->warning($err);
+            \Drupal::logger('simple_facebook_post')->warning($err);
             return false;
           }
           /** @var  \Facebook\GraphNode\GraphUser $user */
@@ -474,7 +474,7 @@ class ConfigurarModulo extends ConfigFormBase {
      * @return \Drupal\Core\StringTranslation\TranslatableMarkup
      */
     protected function _getFacebookConnectionStatus(){
-      $config_manager       = \Drupal::service('analisis_autopost.config_manager');
+      $config_manager       = \Drupal::service('simple_facebook_post.config_manager');
       $default_access_token = $config_manager::get('facebook_user_acces_token');
 
       $fb_config = $config_manager::getMultiple([
@@ -523,7 +523,7 @@ class ConfigurarModulo extends ConfigFormBase {
   
           } catch(ResponseException $e) {
             $response_err = 'Graph returned an error: ' . $e->getMessage();
-            \Drupal::logger('analisis_autopost')->warning($response_err);
+            \Drupal::logger('simple_facebook_post')->warning($response_err);
 
             $markup .= '<p>Se produjo un error al intentar obtener información del usuario, 
             por favor compruebe los datos ingresados sean correctos e 
@@ -533,7 +533,7 @@ class ConfigurarModulo extends ConfigFormBase {
             $replace['@response_exception'] = $response_err;
           } catch(SDKException $e) {
             $sdk_err = 'Facebook SDK returned an error: ' . $e->getMessage();
-            \Drupal::logger('analisis_autopost')->warning($sdk_err);
+            \Drupal::logger('simple_facebook_post')->warning($sdk_err);
 
             $markup .= '<p>Se produjo un error al intentar obtener información del usuario, 
             por favor compruebe los datos ingresados sean correctos e 

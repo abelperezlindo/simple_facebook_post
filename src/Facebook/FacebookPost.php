@@ -1,10 +1,10 @@
 <?php 
-namespace Drupal\analisis_autopost\Facebook;
+namespace Drupal\simpleFacebookPost\Facebook;
 
 use \Facebook\Facebook as Face;
 use \Facebook\Exception\ResponseException;
 use \Facebook\Exception\SDKException;
-use \Drupal\analisis_autopost\Post\Post;
+use \Drupal\simpleFacebookPost\Post\Post;
 
 class FacebookPost {
 
@@ -21,13 +21,13 @@ class FacebookPost {
    */
   public function __construct()
   {
-    $this->app_id     = \Drupal::state()->get('analisis_autopost.facebook_app_id');
-    $this->app_secret = \Drupal::state()->get('analisis_autopost.facebook_app_secret');
-    $this->page_id    = \Drupal::state()->get('analisis_autopost.facebook_page_id');
-    $this->page_access_token  = \Drupal::state()->get('analisis_autopost.page_access_token');
-    $this->user_acces_token   = \Drupal::state()->get('analisis_autopost.user_acces_token');
-    $this->permisos           = \Drupal::state()->get('analisis_autopost.facebook_permisos', 'email');
-    $this->version_api        = \Drupal::state()->get('analisis_autopost.facebook_api_version', 'v13.0');
+    $this->app_id     = \Drupal::state()->get('simple_facebook_post.facebook_app_id');
+    $this->app_secret = \Drupal::state()->get('simple_facebook_post.facebook_app_secret');
+    $this->page_id    = \Drupal::state()->get('simple_facebook_post.facebook_page_id');
+    $this->page_access_token  = \Drupal::state()->get('simple_facebook_post.page_access_token');
+    $this->user_acces_token   = \Drupal::state()->get('simple_facebook_post.user_acces_token');
+    $this->permisos           = \Drupal::state()->get('simple_facebook_post.facebook_permisos', 'email');
+    $this->version_api        = \Drupal::state()->get('simple_facebook_post.facebook_api_version', 'v13.0');
   }
 
   /**
@@ -65,11 +65,11 @@ class FacebookPost {
       $response = $fb->get('/me?fields=name');
     } catch(ResponseException $e) {
       $err = 'Graph returned an error: ' . $e->getMessage();
-      \Drupal::logger('analisis_autopost')->warning($err);
+      \Drupal::logger('simple_facebook_post')->warning($err);
       return false;
     } catch(SDKException $e) {
       $err = 'Facebook SDK returned an error: ' . $e->getMessage();
-      \Drupal::logger('analisis_autopost')->warning($err);
+      \Drupal::logger('simple_facebook_post')->warning($err);
       return false;
     }
     /** @var  \Facebook\GraphNode\GraphUser $user */
@@ -166,11 +166,11 @@ class FacebookPost {
       );
     } catch(ResponseException $e) {
         $err = 'Graph returned an error: ' . $e->getMessage();
-        \Drupal::logger('analisis_autopost')->warning($err);
+        \Drupal::logger('simple_facebook_post')->warning($err);
         return null;
     } catch(SDKException $e) {
         $err =  'Facebook SDK returned an error: ' . $e->getMessage();
-        \Drupal::logger('analisis_autopost')->warning($err);
+        \Drupal::logger('simple_facebook_post')->warning($err);
         return null;
     }
     /** @var \Facebook\GraphNode\GraphNode $graphNode */
@@ -191,7 +191,7 @@ class FacebookPost {
   public function getAndSaveTokenFromCallback($state){
   
     if(!$this->isAppAccessAvailable()){
-      \Drupal::logger('analisis_autopost')->alert(t('<p>Se recibio una request a la url de callback para las respuestas de facebook pero el modulo no esta configurado</p>'));
+      \Drupal::logger('simple_facebook_post')->alert(t('<p>Se recibio una request a la url de callback para las respuestas de facebook pero el modulo no esta configurado</p>'));
       return 0;
     }
 
@@ -207,12 +207,12 @@ class FacebookPost {
     } catch(ResponseException $e) {
       // When Graph returns an error
       $err = 'Graph returned an error: ' . $e->getMessage();
-      \Drupal::logger('analisis_autopost')->warning($err);
+      \Drupal::logger('simple_facebook_post')->warning($err);
       
     } catch(SDKException $e) {
       // When validation fails or other local issues
       $err = 'Facebook SDK returned an error: ' . $e->getMessage();
-      \Drupal::logger('analisis_autopost')->warning($err);
+      \Drupal::logger('simple_facebook_post')->warning($err);
     }
 
     if (!isset($acces_token_temporal)) {
@@ -222,12 +222,12 @@ class FacebookPost {
         $err .= "Error Code: " . $helper->getErrorCode() . "<br />";
         $err .= "Error Reason: " . $helper->getErrorReason() . "<br />";
         $err .= "Error Description: " . $helper->getErrorDescription() . "<br />";
-        \Drupal::logger('analisis_autopost')->warning(t($err));
+        \Drupal::logger('simple_facebook_post')->warning(t($err));
 
         return -1;
       } else {
         header('');
-        \Drupal::logger('analisis_autopost')->warning(t('400 Bad Request'));
+        \Drupal::logger('simple_facebook_post')->warning(t('400 Bad Request'));
         return -2;
       }
     }
@@ -239,11 +239,11 @@ class FacebookPost {
       $tokenMetadata->validateExpiration();
 
 	  } catch (SDKException $e) {
-      \Drupal::logger('analisis_autopost')->warning(t('<p>Error validando el token'));
+      \Drupal::logger('simple_facebook_post')->warning(t('<p>Error validando el token'));
 	    return -1;
     }
     // Guardamos el tocken de acceso
-    \Drupal::state()->set('analisis_autopost.user_acces_token',(string) $acces_token_temporal);
+    \Drupal::state()->set('simple_facebook_post.user_acces_token',(string) $acces_token_temporal);
     
     return 1;
   }

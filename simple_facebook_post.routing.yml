@@ -1,10 +1,10 @@
 
 # Ruta de configuración del modulo
 # 
-analisis_autopost.admin_settings_form:
-  path: '/admin/config/analisis_autopost/adminsettings'
+simple_facebook_post.admin_settings_form:
+  path: '/admin/config/simple_facebook_post/adminsettings'
   defaults:
-    _form: 'Drupal\analisis_autopost\Form\ConfigurarModulo'
+    _form: 'Drupal\simpleFacebookPost\Form\ConfigurarModulo'
     _title: 'Configuración para postear automaticamente noticias en redes sociales'
   requirements:  
     _permission: 'access administration pages'  
@@ -14,10 +14,10 @@ analisis_autopost.admin_settings_form:
 
 # ruta a la  que responde nuestra app de Facebook
 # 
-analisis_autopost.facebook_callback:
+simple_facebook_post.facebook_callback:
   path: 'facebook/fb-callback'
   defaults:
-    _controller: '\Drupal\analisis_autopost\Controller\AnalisisAutopostController::getFacebookCallback'
+    _controller: '\Drupal\simpleFacebookPost\Controller\AnalisisAutopostController::getFacebookCallback'
     _title: ''
   requirements:
     _access: 'TRUE'

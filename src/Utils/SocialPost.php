@@ -1,6 +1,6 @@
 <?php 
 
-namespace Drupal\analisis_autopost\Utils;
+namespace Drupal\simpleFacebookPost\Utils;
 
 use \Drupal\node\NodeInterface;
 use \Drupal\Component\Utility\Html;
@@ -27,9 +27,9 @@ class SocialPost
    */
   public function __construct(NodeInterface $entity, $config = []){
     /**
-     * @var \Drupal\analisis_autopost\Config\ConfigManager $config_manager 
+     * @var \Drupal\simpleFacebookPost\Config\ConfigManager $config_manager 
      */
-    $config_manager = \Drupal::service('analisis_autopost.config_manager');
+    $config_manager = \Drupal::service('simple_facebook_post.config_manager');
     if(empty($config)){
       $config = $config_manager::getMultiple([
         'title',
@@ -134,7 +134,7 @@ class SocialPost
 
   public function publishOnFacebookPage(array $config = []){
 
-    $config_manager = \Drupal::service('analisis_autopost.config_manager');
+    $config_manager = \Drupal::service('simple_facebook_post.config_manager');
     if(empty($config)){
       $config = $config_manager::getMultiple([
         'facebook_app_id',
@@ -182,11 +182,11 @@ class SocialPost
       );
     } catch(ResponseException $e) {
         $err = 'Graph returned an error: ' . $e->getMessage();
-        \Drupal::logger('analisis_autopost')->warning($err);
+        \Drupal::logger('simple_facebook_post')->warning($err);
         return null;
     } catch(SDKException $e) {
         $err =  'Facebook SDK returned an error: ' . $e->getMessage();
-        \Drupal::logger('analisis_autopost')->warning($err);
+        \Drupal::logger('simple_facebook_post')->warning($err);
         return null;
     }
     /** @var \Facebook\GraphNode\GraphNode $graphNode */
@@ -219,7 +219,7 @@ class SocialPost
   }
 
   public function publishOnTwitter(array $config = []){
-    $config_manager = \Drupal::service('analisis_autopost.config_manager');
+    $config_manager = \Drupal::service('simple_facebook_post.config_manager');
     if(empty($config)){
       $config = $config_manager::getMultiple([
         'twitter_consumer_key',

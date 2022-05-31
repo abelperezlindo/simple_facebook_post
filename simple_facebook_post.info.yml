@@ -1,7 +1,7 @@
 name: simple_facebook_post
 type: module
-description: 'Postear noticias en la pagina de Facbook de Analisis Digital'
-package: ideasOrange Software MODS
+description: 'Post Content in your Facebook page'
+package: Custom
 core: 8.x
 core_version_requirement: ^8 || ^9
 dependencies:

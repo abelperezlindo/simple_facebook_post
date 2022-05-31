@@ -206,49 +206,7 @@ class ConfigurarModulo extends ConfigFormBase {
         '#markup'  => $this->_getFacebookConnectionStatus(),
       ];
       
-      $form['twitter'] = [
-        '#type'   => 'details',
-        '#title'  => t('Twitter API Access Settings'),
-        '#group' => 'sections',
-      ];
-      $form['twitter']['twitter_consumer_key'] = [
-        '#type'           => 'textfield',
-        '#title'          => t('Consumer Key'),
-        '#description'    => t('Enter the consumer key'),
-        '#default_value'  => $config_manager::get('twitter_consumer_key'),
-      ];
-      $form['twitter']['twitter_consumer_secret'] = [
-        '#type'           => 'textfield',
-        '#title'          => t('Consumer Secret'),
-        '#description'    => t('Enter the consumer secret'),
-        '#default_value'  => $config_manager::get('twitter_consumer_secret'),
-      ];
-      $form['twitter']['twitter_access_token'] = [
-        '#type'           => 'textfield',
-        '#title'          => t('Access Token'),
-        '#description'    => t(
-          'Enter the access token. This access 
-          token allows access to the twitter account 
-          in which the content of the site will be published.'
-        ),
-        '#default_value'  => $config_manager::get('twitter_access_token'),
-      ];
-      $form['twitter']['twitter_access_token_secret'] = [
-        '#type'           => 'textfield',
-        '#title'          => t('Access Token Secret'),
-        '#default_value'  => $config_manager::get('twitter_access_token_secret'),
-        '#description'    => t(
-          'Enter the access token secret. This access 
-          token secret allows access to the twitter account 
-          in which the content of the site will be published.'
-        ),
-        
-      ];
-      $form['twitter']['twitter_test_connection'] = [
-        '#type'  => 'submit',
-        '#name'  => 'action_twitter_test',
-        '#value' => t('Test api access '),
-      ];
+
 
       return $form;
     }
@@ -418,49 +376,7 @@ class ConfigurarModulo extends ConfigFormBase {
         }
 
       }
-
-      if($trigger['#type'] === 'submit' && $trigger['#name'] =='action_twitter_test'){
-
-        $config_manager::setMultiple([
-          'twitter_consumer_key'        => $form_state->getValue('twitter_consumer_key'),
-          'twitter_consumer_secret'     => $form_state->getValue('twitter_consumer_secret'),
-          'twitter_access_token'        => $form_state->getValue('twitter_access_token'),
-          'twitter_access_token_secret' => $form_state->getValue('twitter_access_token_secret')
-        ]);
-
-        $tw = new TwitterOAuth(
-          $form_state->getValue('twitter_consumer_key'),
-          $form_state->getValue('twitter_consumer_secret'), 
-          $form_state->getValue('twitter_access_token'), 
-          $form_state->getValue('twitter_access_token_secret')
-        );
-    
-        $tw->setApiVersion('2');
-
-        $uid = explode('-', $form_state->getValue('twitter_access_token'))[0];
-        $content = $tw->get('users', ['ids' => $uid]);
-        if(isset($content->errors)){
-          foreach($content->errors as $error){
-            \Drupal::messenger()->addWarning(
-              t(
-                'Account verification failed, Twitter returned the following Error code @error_code: "@error_msg".',
-                ['@error_code' => $error->code, '@error_msg' => $error->message]
-              )
-            );
-          }
-        } elseif(isset($content->data)){
-          foreach($content->data as $data){
-            \Drupal::messenger()->addStatus(t('Ok, @user.', ['@user' => $data->username]));
-          }
-        }
-      }
-
-      if($trigger['#type'] === 'submit' && $trigger['#id'] == 'edit-submit'){
-        $config_manager::setAll($form_state->getValues());
-        return parent::submitForm($form, $form_state);
-      }   
     }
-
     /**
      * { @inheritDoc }
      */

@@ -1,7 +1,7 @@
 <?php
 
-namespace Drupal\simpleFacebookPost\Controller;
-use Drupal\simpleFacebookPost\Facebook\FacebookPost;
+namespace Drupal\simple_facebook_post\Controller;
+use Drupal\simple_facebook_post\Facebook\FacebookPost;
 use Symfony\Component\HttpFoundation\Response;
 
 class AnalisisAutopostController extends Generic{

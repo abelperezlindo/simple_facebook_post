@@ -1,5 +1,5 @@
 <?php
-namespace Drupal\simpleFacebookPost\Config;
+namespace Drupal\simple_facebook_post\Config;
 
 class ConfigManager{
 

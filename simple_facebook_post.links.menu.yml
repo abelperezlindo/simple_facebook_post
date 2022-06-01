@@ -1,0 +1,6 @@
+simple_facebook_post.admin_settings_form:  
+  title: 'Simple Facebook Post'  
+  route_name: simple_facebook_post.admin_settings_form
+  description: 'Configure Facebook API access and content to use'  
+  parent: system.admin_config_system  
+  weight: 99 

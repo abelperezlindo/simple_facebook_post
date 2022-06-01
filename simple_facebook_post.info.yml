@@ -1,8 +1,10 @@
-name: simple_facebook_post
+name: Simple Facebook Post
 type: module
 description: 'Post Content in your Facebook page'
-package: Custom
+package: simple tools
 core: 8.x
 core_version_requirement: ^8 || ^9
 dependencies:
   - entity_events:entity_events
+configure: simple_facebook_post.admin_settings_form
+lifecycle: experimental

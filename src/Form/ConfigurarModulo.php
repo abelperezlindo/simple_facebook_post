@@ -1,18 +1,13 @@
 <?php
-namespace Drupal\simpleFacebookPost\Form;
+namespace Drupal\simple_facebook_post\Form;
 
-use Drupal\Core\Entity;
+
 use \Facebook\Facebook as Facebook;
-use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use \Facebook\Exception\SDKException;
-use Drupal\field\FieldConfigInterface;
-use \Abraham\TwitterOAuth\TwitterOAuth;
 use Drupal\Core\Form\FormStateInterface;
 use \Facebook\Exception\ResponseException;
-use Drupal\simpleFacebookPost\Twitter\TwitterPost;
-use Drupal\simpleFacebookPost\Facebook\FacebookPost;
-use Drupal\config_translation\FormElement\FormElementBase;
+
 
 class ConfigurarModulo extends ConfigFormBase {
 
@@ -85,29 +80,17 @@ class ConfigurarModulo extends ConfigFormBase {
           ),
           
         ];
-        $form['content_box']['title'] = [
-          '#type'           => 'select',
-          '#options'        => $options['title'],
-          '#title'          => t('Field to use to generate the title of the post'),
-          '#default_value'  =>  $config_manager::get('title') ?? '',
-          '#empty_option'   => t('Select'),
-          '#description'    => t(
-            'Select the field you want to use as the title of the post.'
+        $form['content_box']['text_options'] = [
+          '#type'         => 'fieldset',
+          '#title'        => t('Text options'),
+          '#descriptions' => t(
+            'Link title customization options are available only if you have 
+            validated your website domain on Facebook.'
           ),
         ];
-  
-        $form['content_box']['title_suffix'] = [
-          '#type'           => 'textfield',
-          '#title'          => t('Title suffx'),
-          '#default_value'  => $config_manager::get('title_suffix') ?? '',
-          '#empty_option'   => t('select'),
-          '#description'    => t(
-            'Enter a fixed text or a token to concatenate to the end of the title.'
-          ),
-        ];
-        $form['content_box']['body'] = [
+        $form['content_box']['text_options']['body'] = [
           '#type'           => 'select',
-          '#title'          => t('Field to use to generate the body of the post'),
+          '#title'          => t('Field to use to generate the text of the post'),
           '#options'        => $options['body'],
           '#default_value'  => $config_manager::get('body') ?? '',
           '#empty_option'   => t('Select'),
@@ -116,13 +99,56 @@ class ConfigurarModulo extends ConfigFormBase {
             as a font for the body of the post. If the text is too long, it will be cut off.'
           ),
         ];
-        $form['content_box']['body_use_summary'] = [
-          '#type'   => 'checkbox',
-          '#title'  => t('Use summary if available for selected field in post body.'),
-          '#default_value' => $config_manager::get('body_use_summary') ?? '',
-    
+        $form['content_box']['text_options']['body_use_summary'] = [
+          '#type'           => 'checkbox',
+          '#title'          => t('Use summary if available for selected field in post body.'),
+          '#default_value'  => $config_manager::get('body_use_summary') ?? '',
         ];
-        $form['content_box']['image'] = [
+
+        $form['content_box']['link'] = [
+          '#type'         => 'fieldset',
+          '#title'        => t('Link options'),
+          '#descriptions' => t(
+            'Attach the link to the content'
+          ),
+        ];
+        $form['content_box']['link']['share_link'] = [
+          '#type'         => 'checkbox',
+          '#title'        => t('Attach the link to the content'),
+          '#default_value'  => $config_manager::get('share_url') ?? '',
+        ];
+        $form['content_box']['link']['title'] = [
+          '#type'           => 'select',
+          '#options'        => $options['title'],
+          '#title'          => t('Field to use to generate the title of the post'),
+          '#default_value'  =>  $config_manager::get('title') ?? '',
+          '#empty_option'   => t('Select'),
+          '#description'    => t(
+            'Select the field you want to use as the title of the link. 
+            Link title customization options are available only if you have 
+            validated your website domain on Facebook.'
+          ),
+        ];
+  
+        $form['content_box']['link']['title_suffix'] = [
+          '#type'           => 'textfield',
+          '#title'          => t('Title suffx'),
+          '#default_value'  => $config_manager::get('title_suffix') ?? '',
+          '#empty_option'   => t('select'),
+          '#description'    => t(
+            'Enter a fixed text or a token to concatenate to the end of the title of link. 
+            Link title customization options are available only if you have 
+            validated your website domain on Facebook.'
+          ),
+        ];
+        $form['content_box']['upload_images'] = [
+          '#type'         => 'fieldset',
+          '#title'        => t('Images Options'),
+          '#descriptions' => t(
+            'you can attach images to the post.'
+          ),
+        ];
+        $form['content_box']['upload_images']['image'] = [
           '#type'           => 'select',
           '#title'          => t('Field to use to generate the image of the post'),
           '#options'        => $options['image'],
@@ -130,7 +156,7 @@ class ConfigurarModulo extends ConfigFormBase {
           '#default_value'  => $config_manager::get('image') ?? '',
           '#empty_option'   => t('select')
         ];
-        $form['content_box']['image_style'] = [
+        $form['content_box']['upload_images']['image_style'] = [
           '#type'           => 'select',
           '#title'          => t('Post Image Style'),
           '#options'        => $image_styles,

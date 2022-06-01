@@ -1,6 +1,6 @@
 <?php 
 
-namespace Drupal\simpleFacebookPost\Utils;
+namespace Drupal\simple_facebook_post\Utils;
 
 use \Drupal\node\NodeInterface;
 use \Drupal\Component\Utility\Html;
@@ -27,7 +27,7 @@ class SocialPost
    */
   public function __construct(NodeInterface $entity, $config = []){
     /**
-     * @var \Drupal\simpleFacebookPost\Config\ConfigManager $config_manager 
+     * @var \Drupal\simple_facebook_post\Config\ConfigManager $config_manager 
      */
     $config_manager = \Drupal::service('simple_facebook_post.config_manager');
     if(empty($config)){

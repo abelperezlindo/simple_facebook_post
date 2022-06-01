@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simpleFacebookPost\Controller;
+namespace Drupal\simple_facebook_post\Controller;
 
 use Drupal;
 use Drupal\Core\Form\FormBuilder;

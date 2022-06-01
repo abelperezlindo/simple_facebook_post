@@ -1,9 +1,9 @@
 <?php
-namespace Drupal\simpleFacebookPost\EventSubscriber;
+namespace Drupal\simple_facebook_post\EventSubscriber;
 
 use Drupal\entity_events\Event\EntityEvent;
 use Drupal\entity_events\EventSubscriber\EntityEventInsertSubscriber;
-use Drupal\simpleFacebookPost\Utils\SocialPost;
+use Drupal\simple_facebook_post\Utils\SocialPost;
 
 class NewNoticiaSuscriber extends EntityEventInsertSubscriber {
 

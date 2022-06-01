@@ -1,10 +1,10 @@
 services:
   simple_facebook_post.subscriber:
-    class: Drupal\simpleFacebookPost\EventSubscriber\NewNoticiaSuscriber
+    class: Drupal\simple_facebook_post\EventSubscriber\NewNoticiaSuscriber
     tags:
       - {name: event_subscriber}
   simple_facebook_post.post_on_facebook:
-    class:  Drupal\simpleFacebookPost\Facebook\Facebook
+    class:  Drupal\simple_facebook_post\Facebook\Facebook
 
   simple_facebook_post.config_manager:
-    class:  Drupal\simpleFacebookPost\Config\ConfigManager
+    class:  Drupal\simple_facebook_post\Config\ConfigManager

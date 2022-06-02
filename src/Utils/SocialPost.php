@@ -10,8 +10,6 @@ use \Facebook\Exception\ResponseException;
 use \Facebook\Exception\SDKException;
 
 
-use \Abraham\TwitterOAuth\TwitterOAuth;
-
 
 
 class SocialPost

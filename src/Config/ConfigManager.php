@@ -4,7 +4,7 @@ namespace Drupal\simple_facebook_post\Config;
 class ConfigManager{
 
   public const TITLE_ALLOWED_FIELDS_TYPE = ['string', 'text'];
-  public const BODY_ALLOWED_FIELDS_TYPE  = ['string', 'text', 'text_with_summary', 'string_long'];
+  public const BODY_ALLOWED_FIELDS_TYPE  = ['string', 'text', 'text_with_summary', 'string_long', 'text_long'];
   public const IMAGE_ALLOWED_FIELDS_TYPE = ['image'];
   /**
    * Set a key in state
@@ -30,9 +30,9 @@ class ConfigManager{
    * get values of multiples variables from state
    */
   public static function getMultiple(array $keys){
-    $result = $keys;
+    $result = [];
     foreach($result as $key => $value){
-      $value = self::get($key);
+      $result[$value] = self::get($value);
     }
     return $result;
   }
@@ -48,10 +48,6 @@ class ConfigManager{
       'media',
       'image_style',
       'preview_markup',
-      'twitter_consumer_key',
-      'twitter_consumer_secret',
-      'twitter_access_token',
-      'twitter_access_token_secret',
       'facebook_app_id',
       'facebook_app_secret',
       'facebook_page_id',

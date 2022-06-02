@@ -123,6 +123,10 @@ class ConfigurarModulo extends ConfigFormBase {
           '#title'          => t('Field to use to generate the title of the post'),
           '#default_value'  =>  $config_manager::get('title') ?? '',
           '#empty_option'   => t('Select'),
+          '#states'         => [
+            'visible'   => [':input[name="share_link"]' => ['checked' => true]],
+            'invisible' => [':input[name="share_link"]' => ['checked' => false]],
+          ],
           '#description'    => t(
             'Select the field you want to use as the title of the link. 
             Link title customization options are available only if you have 
@@ -134,7 +138,10 @@ class ConfigurarModulo extends ConfigFormBase {
           '#type'           => 'textfield',
           '#title'          => t('Title suffx'),
           '#default_value'  => $config_manager::get('title_suffix') ?? '',
-          '#empty_option'   => t('select'),
+          '#states'         => [
+            'visible'   => [':input[name="share_link"]' => ['checked' => true]],
+            'invisible' => [':input[name="share_link"]' => ['checked' => false]],
+          ],
           '#description'    => t(
             'Enter a fixed text or a token to concatenate to the end of the title of link. 
             Link title customization options are available only if you have 
@@ -154,7 +161,7 @@ class ConfigurarModulo extends ConfigFormBase {
           '#options'        => $options['image'],
           '#description'    => t('Select the field you want to use for the post image.'),
           '#default_value'  => $config_manager::get('image') ?? '',
-          '#empty_option'   => t('select')
+          '#empty_option'   => t('Select'),
         ];
         $form['content_box']['upload_images']['image_style'] = [
           '#type'           => 'select',
@@ -162,6 +169,9 @@ class ConfigurarModulo extends ConfigFormBase {
           '#options'        => $image_styles,
           '#default_value'  => $config_manager::get('image_style') ?? '',
           '#empty_option'   => t('Select'),
+          '#states'         => [
+            'invisible' => [':input[name="image"]' => ['value' => '']],
+          ],
           '#description'    => t(
             'Enter the image style you want to use, 
             if you do not select any option the original image will be used.'
